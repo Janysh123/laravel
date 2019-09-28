@@ -30,58 +30,24 @@ class PortController extends Controller
             if(empty($point)){
                 DB::table('wechat_user')->insert([
                     'open_id'=>$xml_arr['FromUserName'],
-                    'nickname'=>$data['nickname']
+                    'nickname'=>$data['nickname'],
+                    'add_time'=>time(),
+                    'sex'=>$data['sex']
                 ]);
+                $message='您好'.$data['nickname'].'当前时间为'.date('Y-m-d H:i:s',time());
+                $xml_str = '<xml><ToUserName><![CDATA['.$xml_arr['FromUserName'].']]></ToUserName><FromUserName><![CDATA['.$xml_arr['ToUserName'].']]></FromUserName><CreateTime>'.time().'</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA['.$message.']]></Content></xml>';
+                $wechat_log_psth = storage_path('logs/wechat/'.date('Y-m-d').'.log');
+                file_put_contents($wechat_log_psth,"///////////开头///////////\n",FILE_APPEND);
+                file_put_contents($wechat_log_psth,$xml_str,FILE_APPEND);
+                file_put_contents($wechat_log_psth,"\n///////////结尾///////////\n\n",FILE_APPEND);
+                echo $xml_str;
+            }else{
+                $message='欢迎回来'.$data['nickname'].'当前时间为'.date('Y-m-d H:i:s',time());
+                $xml_str = '<xml><ToUserName><![CDATA['.$xml_arr['FromUserName'].']]></ToUserName><FromUserName><![CDATA['.$xml_arr['ToUserName'].']]></FromUserName><CreateTime>'.time().'</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA['.$message.']]></Content></xml>';
+                $wechat_log_psth = storage_path('logs/wechat/'.date('Y-m-d').'.log');
+                file_put_contents($wechat_log_psth,"///////////开头///////////\n",FILE_APPEND);
+                file_put_contents($wechat_log_psth,$xml_str,FILE_APPEND);
+                file_put_contents($wechat_log_psth,"\n///////////结尾///////////\n\n",FILE_APPEND);
+                echo $xml_str;
             }
-            $message='您好'.$data['nickname'].'当前时间为'.date('Y-m-d H:i:s',time());
-            $xml_str = '<xml><ToUserName><![CDATA['.$xml_arr['FromUserName'].']]></ToUserName><FromUserName><![CDATA['.$xml_arr['ToUserName'].']]></FromUserName><CreateTime>'.time().'</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA['.$message.']]></Content></xml>';
-            echo $xml_str;
         }
-        ////        签到
-//        if($xml_arr['EventKey'] == 'qiandao'){
-//            if($point->or_sign == 1){
-//                $message='已签到';
-//                $xml_str = '<xml><ToUserName><![CDATA['.$xml_arr['FromUserName'].']]></ToUserName><FromUserName><![CDATA['.$xml_arr['ToUserName'].']]></FromUserName><CreateTime>'.time().'</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA['.$message.']]></Content></xml>';
-//                echo $xml_str;
-//            }else if($point->or_sign == 2){
-//                if($point->sign==1||$point->sign=='0'){
-//                    $points=$point->points+5;
-//                    $sign=$point->sign+1;
-//                }
-//                if($point->sign==2){
-//                    $points=$point->points+10;
-//                    $sign=$point->sign+1;
-//                }
-//                if($point->sign==3){
-//                    $points=$point->points+15;
-//                    $sign=$point->sign+1;
-//                }
-//                if($point->sign==4){
-//                    $points=$point->points+20;
-//                    $sign=$point->sign+1;
-//                }
-//                if($point->sign==5){
-//                    $points=$point->points+25;
-//                    $sign=$point->sign+1;
-//                }
-//                if($point->sign==6){
-//                    $points=$point->points+5;
-//                    $sign=1;
-//                }
-//                DB::table('wechat_user')->where(['open_id'=>$xml_arr['FromUserName']])->update([
-//                    'points'=>$points,
-//                    'or_sign'=>1,
-//                    'sign'=>$sign,
-//                    'sign_time'=>time()
-//                ]);
-//                $message='签到成功';
-//                $xml_str = '<xml><ToUserName><![CDATA['.$xml_arr['FromUserName'].']]></ToUserName><FromUserName><![CDATA['.$xml_arr['ToUserName'].']]></FromUserName><CreateTime>'.time().'</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA['.$message.']]></Content></xml>';
-//                echo $xml_str;
-//            }
-//        }else if($xml_arr['EventKey'] == 'chaxun'){
-//            $message='您的积分为:'.$point->points.'分';
-//            $xml_str = '<xml><ToUserName><![CDATA['.$xml_arr['FromUserName'].']]></ToUserName><FromUserName><![CDATA['.$xml_arr['ToUserName'].']]></FromUserName><CreateTime>'.time().'</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA['.$message.']]></Content></xml>';
-//            echo $xml_str;
-//        }
-    }
-}

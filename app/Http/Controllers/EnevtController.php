@@ -3,12 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Tools\Tools;
+use DB;
 class EnevtController extends Controller
 {
-    public function event()
+    public $tools;
+    public function __construct(Tools $tools)
     {
-    	echo $_GET['echostr'];
+        $this->tools = $tools;
+    }
+    /**
+     * 接收微信发送的消息【用户互动】
+     */
+    public function envet()
+    {
         $xml_string = file_get_contents('php://input');  //获取
         $wechat_log_psth = storage_path('logs/wechat/'.date('Y-m-d').'.log');
         file_put_contents($wechat_log_psth,"///////////开头///////////\n",FILE_APPEND);
@@ -24,12 +32,25 @@ class EnevtController extends Controller
             if(empty($point)){
                 DB::table('wechat_user')->insert([
                     'open_id'=>$xml_arr['FromUserName'],
-                    'nickname'=>$data['nickname']
+                    'nickname'=>$data['nickname'],
+                    'add_time'=>time(),
+                    'sex'=>$data['sex']
                 ]);
+                $message='您好'.$data['nickname'].'当前时间为'.date('Y-m-d H:i:s',time());
+                $xml_str = '<xml><ToUserName><![CDATA['.$xml_arr['FromUserName'].']]></ToUserName><FromUserName><![CDATA['.$xml_arr['ToUserName'].']]></FromUserName><CreateTime>'.time().'</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA['.$message.']]></Content></xml>';
+                $wechat_log_psth = storage_path('logs/wechat/'.date('Y-m-d').'.log');
+                file_put_contents($wechat_log_psth,"///////////开头///////////\n",FILE_APPEND);
+                file_put_contents($wechat_log_psth,$xml_str,FILE_APPEND);
+                file_put_contents($wechat_log_psth,"\n///////////结尾///////////\n\n",FILE_APPEND);
+                echo $xml_str;
+            }else{
+                $message='欢迎回来'.$data['nickname'].'当前时间为'.date('Y-m-d H:i:s',time());
+                $xml_str = '<xml><ToUserName><![CDATA['.$xml_arr['FromUserName'].']]></ToUserName><FromUserName><![CDATA['.$xml_arr['ToUserName'].']]></FromUserName><CreateTime>'.time().'</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA['.$message.']]></Content></xml>';
+                $wechat_log_psth = storage_path('logs/wechat/'.date('Y-m-d').'.log');
+                file_put_contents($wechat_log_psth,"///////////开头///////////\n",FILE_APPEND);
+                file_put_contents($wechat_log_psth,$xml_str,FILE_APPEND);
+                file_put_contents($wechat_log_psth,"\n///////////结尾///////////\n\n",FILE_APPEND);
+                echo $xml_str;
             }
-            $message='您好'.$data['nickname'].'当前时间为'.date('Y-m-d H:i:s',time());
-            $xml_str = '<xml><ToUserName><![CDATA['.$xml_arr['FromUserName'].']]></ToUserName><FromUserName><![CDATA['.$xml_arr['ToUserName'].']]></FromUserName><CreateTime>'.time().'</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA['.$message.']]></Content></xml>';
-            echo $xml_str;
-        
-    }
+        }
 }

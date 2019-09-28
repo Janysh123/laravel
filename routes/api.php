@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::any('event','PortController@event');
+Route::any('event','EnevtController@event');
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
